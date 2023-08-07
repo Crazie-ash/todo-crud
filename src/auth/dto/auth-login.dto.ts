@@ -11,7 +11,8 @@ export class AuthLoginDto {
   email: string;
 
   @ApiProperty({
-    example: 'password123',
+    example: process.env.JWT_SECRET || 
+'secret123',
     description: 'User password',
   })
   @IsNotEmpty({ message: 'Password should not be empty' })

@@ -18,7 +18,8 @@ export class AuthService {
 
   private async generateToken(user: User): Promise<string> {
     const payload = { sub: user.id, email: user.email };
-    return this.jwtService.signAsync(payload, { secret: 'password123' });
+    return this.jwtService.signAsync(payload, { secret: process.env.JWT_SECRET || 
+'secret123' });
   }
 
   async login(credentials: { email: string; password: string }): Promise<any> {

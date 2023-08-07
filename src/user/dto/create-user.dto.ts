@@ -12,7 +12,8 @@ export class CreateUserDto {
   @IsEmail({}, { message: 'Invalid email format' })
   email: string;
 
-  @ApiProperty({ example: 'password123', description: 'User password' })
+  @ApiProperty({ example: process.env.JWT_SECRET || 
+'secret123', description: 'User password' })
   @IsNotEmpty({ message: 'Password cannot be empty' })
   @IsString({ message: 'Password must be a string' })
   @MinLength(6, { message: 'Password must be at least 6 characters long' })

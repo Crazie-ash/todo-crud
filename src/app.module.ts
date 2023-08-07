@@ -15,7 +15,8 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
   imports: [
     TypeOrmModule.forRoot(typeOrmConfig),
     JwtModule.register({
-      secret: 'password123', 
+      secret: process.env.JWT_SECRET ||
+        'secret123',
       signOptions: { expiresIn: '1h' },
     }),
     TodoModule,
@@ -25,4 +26,4 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
   controllers: [AppController],
   providers: [AuthService, LocalStrategy, JwtStrategy, AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -2,6 +2,7 @@ import { ValidationPipe, BadRequestException, ValidationError, HttpStatus, INest
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as dotenv from 'dotenv';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -29,6 +30,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 }
 
 async function bootstrap() {
+  dotenv.config();
   const app = await NestFactory.create(AppModule);
 
   // Use validation pipe to validate request payloads
