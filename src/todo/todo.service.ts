@@ -18,7 +18,7 @@ export class TodoService {
         sortBy: string = 'updated_at',
         sortOrder: 'ASC' | 'DESC' = 'DESC',
         search: string = '',
-    ): Promise<Todo[]> {
+    ): Promise<any> {
         const options: FindManyOptions<Todo> = {
             take: limit,
             skip: (page - 1) * limit,
@@ -30,10 +30,11 @@ export class TodoService {
                 ]
                 : {},
         };
-        return this.todoRepository.find(options);
+        const todos = await this.todoRepository.find(options);
+        return { message: 'Successfully retrieved todos', data: todos };
     }
 
-    async getTodoById(id: number): Promise<Todo> {
+    async getTodoById(id: number): Promise<any> {
         const options: FindOneOptions<Todo> = {
             where: { id },
         };
@@ -42,16 +43,16 @@ export class TodoService {
             if (!todo) {
                 throw new NotFoundException(`Todo with id ${id} not found`);
             }
-            return todo;
+            return { message: 'Successfully retrieved a todo', data: todo };
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;
             }
-            throw new InternalServerErrorException('Failed to get todo by id');
+            throw new InternalServerErrorException('Something went wrong!');
         }
     }
 
-    async createTodo(createTodoDto: CreateTodoDto): Promise<Todo> {
+    async createTodo(createTodoDto: CreateTodoDto): Promise<any> {
         try {
             const { title } = createTodoDto;
             const existingTodo = await this.todoRepository.findOne({ where: { title } });
@@ -59,12 +60,13 @@ export class TodoService {
                 throw new ConflictException('A Todo with the same title already exists.');
             }
             const todo = this.todoRepository.create(createTodoDto);
-            return await this.todoRepository.save(todo);
+            const createdTodo = await this.todoRepository.save(todo);
+            return { message: 'Todo created successfully', data: createdTodo };
         } catch (error) {
             if (error instanceof ConflictException) {
                 throw new ConflictException(error.message);
             } else {
-                throw new InternalServerErrorException('Failed to create a todo');
+                throw new InternalServerErrorException('Something went wrong!');
             }
         }
     }
@@ -72,23 +74,31 @@ export class TodoService {
     async updateTodo(
         id: number,
         updateTodoDto: UpdateTodoDto,
-    ): Promise<Todo> {
+    ): Promise<any> {
         try {
             await this.todoRepository.update(id, updateTodoDto);
-            return this.getTodoById(id);
+            const todo = await this.getTodoById(id);
+            if (!todo) {
+                throw new NotFoundException(`Todo with id ${id} not found`);
+            }
+            return { message: 'Todo updated successfully', data: todo.data };
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;
             }
-            throw new InternalServerErrorException('Failed to update a todo');
+            throw new InternalServerErrorException('Something went wrong!');
         }
     }
 
-    async deleteTodo(id: number): Promise<void> {
+    async deleteTodo(id: number): Promise<any> {
         try {
-            await this.todoRepository.delete(id);
+            const result = await this.todoRepository.delete(id);
+            if (result.affected === 0) {
+                throw new NotFoundException(`Todo with id ${id} not found`);
+            }
+            return { message: 'Todo deleted successfully' };
         } catch (error) {
-            throw new InternalServerErrorException('Failed to delete a todo');
+            throw new InternalServerErrorException('Something went wrong!');
         }
     }
 }
