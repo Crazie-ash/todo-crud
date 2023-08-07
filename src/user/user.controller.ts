@@ -21,7 +21,7 @@ export class UserController {
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
-    description: 'User with this email already exists',
+    description: 'User with this email or username already exists',
   })
   @ApiBody({ type: CreateUserDto }) 
   async createUser(@Body() createUserDto: CreateUserDto): Promise<any> {

@@ -1,20 +1,10 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Post,
-  Body,
-  Put,
-  Delete,
-  Query,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Put, Delete, Query, HttpStatus, NotFoundException, UseGuards, Request } from '@nestjs/common';
 import { Todo } from '../entities/todo.entity';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
 
 @Controller('todos')
 @ApiTags('todos') 
@@ -22,6 +12,8 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all todos' })
   @ApiQuery({ name: 'page', type: Number, required: false, example: 1 })
   @ApiQuery({ name: 'limit', type: Number, required: false, example: 10 })
@@ -34,32 +26,20 @@ export class TodoController {
     isArray: true,
   })
   async getAllTodos(
+    @Request() req, // Inject the Request object
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('sortBy') sortBy: string = 'updated_at',
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'DESC',
     @Query('search') search?: string,
   ): Promise<any> {
-    return this.todoService.getAllTodos(page, limit, sortBy, sortOrder, search);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a todo by ID' })
-  @ApiParam({ name: 'id', type: Number, example: 1 })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Successfully retrieved a todo',
-  })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Todo not found' })
-  async getTodoById(@Param('id') id: number): Promise<any> {
-    const todo = await this.todoService.getTodoById(id);
-    if (!todo) {
-      throw new NotFoundException(`Todo with id ${id} not found`);
-    }
-    return todo;
+    const userId = req.user.id; // Access user ID from the token
+    return this.todoService.getAllTodos(page, limit, sortBy, sortOrder, search, userId);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new todo' })
   @ApiBody({ type: CreateTodoDto })
   @ApiResponse({
@@ -70,11 +50,17 @@ export class TodoController {
     status: HttpStatus.CONFLICT,
     description: 'A Todo with the same title already exists',
   })
-  async createTodo(@Body() createTodoDto: CreateTodoDto): Promise<any> {
-    return this.todoService.createTodo(createTodoDto);
+  async createTodo(
+    @Body() createTodoDto: CreateTodoDto,
+    @Request() req, // Inject the Request object
+  ): Promise<any> {
+    const userId = req.user.id; // Access user ID from the token
+    return this.todoService.createTodo(createTodoDto, userId);
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update a todo by ID' })
   @ApiParam({ name: 'id', type: Number, example: 1 })
   @ApiBody({ type: UpdateTodoDto })
@@ -86,8 +72,10 @@ export class TodoController {
   async updateTodo(
     @Param('id') id: number,
     @Body() updateTodoDto: UpdateTodoDto,
+    @Request() req, // Inject the Request object
   ): Promise<{ message: string; todo: Todo }> {
-    const todo = await this.todoService.updateTodo(id, updateTodoDto);
+    const userId = req.user.id; // Access user ID from the token
+    const todo = await this.todoService.updateTodo(id, updateTodoDto, userId);
     if (!todo) {
       throw new NotFoundException(`Todo with id ${id} not found`);
     }
@@ -95,12 +83,18 @@ export class TodoController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a todo by ID' })
   @ApiParam({ name: 'id', type: Number, example: 1 })
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Todo deleted successfully' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Todo not found' })
-  async deleteTodo(@Param('id') id: number): Promise<any> {
-    const response = await this.todoService.deleteTodo(id);
+  async deleteTodo(
+    @Param('id') id: number,
+    @Request() req, // Inject the Request object
+  ): Promise<any> {
+    const userId = req.user.id; // Access user ID from the token
+    const response = await this.todoService.deleteTodo(id, userId);
     return response;
   }
 }

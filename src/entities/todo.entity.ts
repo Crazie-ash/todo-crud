@@ -52,4 +52,12 @@ export class Todo {
   })
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @ApiProperty({
+    example: 1,
+    description: 'The user ID associated with the todo item',
+    type: Number,
+  })
+  @Column()
+  userId: number;
 }

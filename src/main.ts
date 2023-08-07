@@ -1,4 +1,4 @@
-import { ValidationPipe, BadRequestException, ValidationError, HttpStatus, INestApplication, ExceptionFilter, Catch, ArgumentsHost, ConflictException } from '@nestjs/common';
+import { ValidationPipe, BadRequestException, ValidationError, HttpStatus, INestApplication, ExceptionFilter, Catch, ArgumentsHost, ConflictException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -17,6 +17,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof ConflictException) {
         status = HttpStatus.CONFLICT;
         message = exception.message || 'Conflict';
+    } else if (exception instanceof UnauthorizedException) {
+        status = HttpStatus.UNAUTHORIZED;
+        message = exception.message || 'Unauthorized';
+    } else if (exception instanceof ForbiddenException) {
+        status = HttpStatus.FORBIDDEN;
+        message = exception.message || 'Forbidden';
     }
     res.status(status).json({ message });
   }
@@ -44,6 +50,7 @@ async function bootstrap() {
     .setDescription('API for managing Todo items')
     .setVersion('1.0')
     .addTag('todos')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
