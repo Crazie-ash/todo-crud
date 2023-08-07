@@ -1,4 +1,4 @@
-import { ValidationPipe, BadRequestException, ValidationError, HttpStatus, INestApplication, ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { ValidationPipe, BadRequestException, ValidationError, HttpStatus, INestApplication, ExceptionFilter, Catch, ArgumentsHost, ConflictException } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -8,8 +8,16 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse();
-    const status = exception instanceof BadRequestException ? HttpStatus.BAD_REQUEST : HttpStatus.INTERNAL_SERVER_ERROR;
-    const message = (exception.message || exception.response.message) || 'Internal Server Error';
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal Server Error';
+
+    if (exception instanceof BadRequestException) {
+        status = HttpStatus.BAD_REQUEST;
+        message = exception.message || 'Bad Request';
+    } else if (exception instanceof ConflictException) {
+        status = HttpStatus.CONFLICT;
+        message = exception.message || 'Conflict';
+    }
     res.status(status).json({ message });
   }
 }

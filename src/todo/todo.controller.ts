@@ -1,4 +1,3 @@
-// todo.controller.ts
 import {
   Controller,
   Get,
@@ -18,7 +17,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiTags, ApiResponse } from 
 import { UpdateTodoDto } from './dto/update-todo.dto';
 
 @Controller('todos')
-@ApiTags('todos') // Add tags for the API documentation
+@ApiTags('todos') 
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
