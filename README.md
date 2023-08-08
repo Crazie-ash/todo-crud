@@ -26,7 +26,21 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Prerequisites
+
+Install postgresql and create a database
+```sql
+CREATE DATABASE todo_db;
+```
+
+
 ## Installation
+
+Install the Nest CLI:
+
+```
+npm install -g @nestjs/cli
+```
 
 Used node v20.5.0 and npm v9.8.0
 ```bash
