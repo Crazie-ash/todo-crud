@@ -53,6 +53,8 @@ $ npm install
 # development
 $ npm run start
 
+# make sure env has "POSTGRES_HOST=localhost"
+
 # watch mode
 $ npm run start:dev
 
@@ -71,6 +73,17 @@ $ npm run test:e2e
 
 # test coverage
 $ npm run test:cov
+```
+## Docker
+
+```bash
+# docker up
+$ docker compose up
+
+# make sure env has "POSTGRES_HOST=postgres"
+
+# docker down
+$ docker compose down
 ```
 
 ## Support
