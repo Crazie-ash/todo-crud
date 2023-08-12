@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
 import { BadRequestException, ConflictException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
-import * as exceptionConstants from 'src/constants/exception.constants';
+import * as exceptionConstants from '../constants/exception.constants';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {

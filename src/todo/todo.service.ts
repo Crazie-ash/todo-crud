@@ -4,9 +4,9 @@ import { FindManyOptions, FindOneOptions, Like } from 'typeorm';
 import { Todo } from '../entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { TodoRepository } from './todo.repository';
-import { UpdateTodoDto } from 'src/todo/dto/update-todo.dto';
+import { UpdateTodoDto } from './dto/update-todo.dto';
 import { CreateTodoResponse, DeleteTodoResponse, GetAllTodosResponse, GetTodoByIdResponse, UpdateTodoResponse } from './todo.response';
-import * as todoMessages from 'src/constants/todo.constants';
+import * as todoMessages from '../constants/todo.constants';
 
 @Injectable()
 export class TodoService {
