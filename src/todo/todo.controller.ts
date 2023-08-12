@@ -26,14 +26,14 @@ export class TodoController {
     isArray: true,
   })
   async getAllTodos(
-    @Request() req, // Inject the Request object
+    @Request() req,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('sortBy') sortBy: string = 'updated_at',
     @Query('sortOrder') sortOrder: 'ASC' | 'DESC' = 'DESC',
     @Query('search') search?: string,
   ): Promise<any> {
-    const userId = req.user.id; // Access user ID from the token
+    const userId = req.user.id;
     return this.todoService.getAllTodos(page, limit, sortBy, sortOrder, search, userId);
   }
 
@@ -52,9 +52,9 @@ export class TodoController {
   })
   async createTodo(
     @Body() createTodoDto: CreateTodoDto,
-    @Request() req, // Inject the Request object
+    @Request() req,
   ): Promise<any> {
-    const userId = req.user.id; // Access user ID from the token
+    const userId = req.user.id;
     return this.todoService.createTodo(createTodoDto, userId);
   }
 
@@ -72,9 +72,9 @@ export class TodoController {
   async updateTodo(
     @Param('id') id: number,
     @Body() updateTodoDto: UpdateTodoDto,
-    @Request() req, // Inject the Request object
+    @Request() req,
   ): Promise<{ message: string; todo: Todo }> {
-    const userId = req.user.id; // Access user ID from the token
+    const userId = req.user.id;
     const todo = await this.todoService.updateTodo(id, updateTodoDto, userId);
     if (!todo) {
       throw new NotFoundException(`Todo with id ${id} not found`);
@@ -91,9 +91,9 @@ export class TodoController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Todo not found' })
   async deleteTodo(
     @Param('id') id: number,
-    @Request() req, // Inject the Request object
+    @Request() req,
   ): Promise<any> {
-    const userId = req.user.id; // Access user ID from the token
+    const userId = req.user.id;
     const response = await this.todoService.deleteTodo(id, userId);
     return response;
   }

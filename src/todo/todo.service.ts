@@ -19,7 +19,7 @@ export class TodoService {
         sortBy: string = 'updated_at',
         sortOrder: 'ASC' | 'DESC' = 'DESC',
         search: string = '',
-        userId?: number, // Include userId parameter to get todos associated with a specific user
+        userId?: number,
     ): Promise<any> {
         const options: FindManyOptions<Todo> = {
             take: limit,
@@ -32,7 +32,7 @@ export class TodoService {
                         description: Like(`%${search}%`),
                     }
                     : {}),
-                userId: userId, // Filter todos by userId if provided
+                userId: userId,
             },
         };
         const todos = await this.todoRepository.find(options);
@@ -82,7 +82,7 @@ export class TodoService {
     async updateTodo(
         id: number,
         updateTodoDto: UpdateTodoDto,
-        userId?: number, // Include userId parameter to check if the todo belongs to the user
+        userId?: number,
     ): Promise<any> {
         try {
             const todo = await this.getTodoById(id);
