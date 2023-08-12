@@ -16,12 +16,12 @@ export class UserService {
         try {
 
             const existingUser = await this.userRepository
-            .createQueryBuilder('user')
-            .where('user.email = :email OR user.username = :username', {
-                email: createUserDto.email,
-                username: createUserDto.username,
-            })
-            .getOne();
+                .createQueryBuilder('user')
+                .where('user.email = :email OR user.username = :username', {
+                    email: createUserDto.email,
+                    username: createUserDto.username,
+                })
+                .getOne();
             if (existingUser) {
                 throw new ConflictException('User with this email or username already exists');
             }
