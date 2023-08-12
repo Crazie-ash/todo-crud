@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
@@ -35,4 +35,18 @@ import { DEFAULT_JWT_EXPIRY, DEFAULT_JWT_SECRET, JWT_SECRET } from './constants/
   controllers: [AppController],
   providers: [AuthService, LocalStrategy, JwtStrategy, AppService],
 })
-export class AppModule { }
+export class AppModule implements OnModuleInit {
+  constructor(private readonly configService: ConfigService) {}
+
+  async onModuleInit() {
+    try {
+      await TypeOrmModule.forRootAsync({
+        useFactory: typeOrmConfig,
+        inject: [ConfigService],
+      });
+      console.log('Database connected successfully');
+    } catch (error) {
+      console.error('Database connection failed', error);
+    }
+  }
+}

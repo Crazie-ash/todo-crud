@@ -4,6 +4,7 @@ import { FindOneOptions, Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserResponse } from './user.response';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,7 @@ export class UserService {
         private userRepository: Repository<User>,
     ) { }
 
-    async createUser(createUserDto: CreateUserDto): Promise<any> {
+    async createUser(createUserDto: CreateUserDto): Promise<CreateUserResponse> {
         try {
 
             const existingUser = await this.userRepository
@@ -28,7 +29,7 @@ export class UserService {
 
             const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
             const user = this.userRepository.create({ ...createUserDto, password: hashedPassword });
-            const createdUser = this.userRepository.save(user);
+            const createdUser = await this.userRepository.save(user);
             return { message: 'User created successfully', data: createdUser };
         } catch (error) {
             if (error instanceof ConflictException) {
