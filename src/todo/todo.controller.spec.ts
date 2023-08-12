@@ -39,23 +39,23 @@ describe('TodoController', () => {
           title: 'Task 1', 
           description: 'Task Description 1', 
           userId: 1,
-          status: false, // Add status property
-          created_at: new Date(), // Add created_at property
-          updated_at: new Date() // Add updated_at property
+          status: false,
+          created_at: new Date(),
+          updated_at: new Date()
         },
         { 
           id: 2, 
           title: 'Task 2', 
           description: 'Task Description 2', 
           userId: 1,
-          status: true, // Add status property
-          created_at: new Date(), // Add created_at property
-          updated_at: new Date() // Add updated_at property
+          status: true,
+          created_at: new Date(),
+          updated_at: new Date()
         },
       ];
       
       const mockRequest = {
-        user: { id: 1 }, // Mock the user object
+        user: { id: 1 },
       };
       jest.spyOn(service, 'getAllTodos').mockResolvedValue({ message: 'Todos retrieved successfully', data: mockTodos });
 
@@ -70,7 +70,7 @@ describe('TodoController', () => {
       const createTodoDto: CreateTodoDto = {
         title: 'New Task',
         description: 'New Task Description',
-        userId: 1, // Add userId to match CreateTodoDto requirement
+        userId: 1,
       };
 
       const userId = 1;
@@ -79,10 +79,10 @@ describe('TodoController', () => {
         id: 1,
         title: createTodoDto.title,
         description: createTodoDto.description,
-        userId: 1, // Add userId to match CreateTodoDto requirement
-        status: false, // Add status
-        created_at: new Date(), // Add created_at
-        updated_at: new Date(), // Add updated_at
+        userId: 1,
+        status: false,
+        created_at: new Date(),
+        updated_at: new Date(),
       };
 
       jest.spyOn(service, 'createTodo').mockResolvedValue({ message: 'Todo created successfully', data: mockCreatedTodo });
@@ -109,8 +109,8 @@ describe('TodoController', () => {
         description: 'Old Task Description',
         userId: userId,
         status: false,
-        created_at: new Date(), // Add created_at property
-        updated_at: new Date(), // Add updated_at property
+        created_at: new Date(),
+        updated_at: new Date(),
       };
   
       const mockUpdatedTodo: Todo = {
@@ -118,9 +118,9 @@ describe('TodoController', () => {
         title: updateTodoDto.title,
         description: updateTodoDto.description,
         userId: userId,
-        status: true, // Add status
-        created_at: existingTodo.created_at, // Use existing created_at timestamp
-        updated_at: new Date(), // Add updated_at
+        status: true,
+        created_at: existingTodo.created_at,
+        updated_at: new Date(),
       };
   
       jest.spyOn(service, 'getTodoById').mockResolvedValue({ message: 'Todo retrieved successfully', data: existingTodo });
@@ -151,7 +151,7 @@ describe('TodoController', () => {
     });
 
     it('should throw NotFoundException for nonexistent todo', async () => {
-      jest.spyOn(service, 'deleteTodo').mockRejectedValue(new NotFoundException()); // Mock deleteTodo to throw NotFoundException
+      jest.spyOn(service, 'deleteTodo').mockRejectedValue(new NotFoundException());
 
       await expect(controller.deleteTodo(1, { user: { id: 1 } })).rejects.toThrow(NotFoundException);
     });

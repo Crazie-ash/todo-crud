@@ -20,11 +20,11 @@ describe('AuthController', () => {
       providers: [
         AuthService,
         {
-          provide: getRepositoryToken(User), // Assuming your User entity is named User
-          useClass: Repository, // Import this from TypeORM
+          provide: getRepositoryToken(User),
+          useClass: Repository,
         },
-        UserService, // Provide the UserService
-        JwtService, // Provide the JwtService
+        UserService,
+        JwtService,
       ],
     }).compile();
 
