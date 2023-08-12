@@ -1,0 +1,10 @@
+export const TODO_NOT_FOUND = (id: number) => `Todo with id ${id} not found`;
+export const TODO_ALREADY_EXISTS = 'A Todo with the same title already exists.';
+export const PERMISSION_DENIED_UPDATE = 'You do not have permission to update this todo.';
+export const PERMISSION_DENIED_DELETE = 'You do not have permission to delete this todo.';
+export const SOMETHING_WENT_WRONG = 'Something went wrong!';
+export const TODO_CREATED_SUCCESSFULLY = 'Todo created successfully';
+export const TODO_UPDATED_SUCCESSFULLY = 'Todo updated successfully';
+export const TODO_DELETED_SUCCESSFULLY = 'Todo deleted successfully';
+export const TODOS_RETRIEVED_SUCCESSFULLY = 'Successfully retrieved todos';
+export const TODO_RETRIEVED_SUCCESSFULLY = 'Successfully retrieved a todo';

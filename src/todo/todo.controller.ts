@@ -73,7 +73,7 @@ export class TodoController {
     @Param('id') id: number,
     @Body() updateTodoDto: UpdateTodoDto,
     @Request() req,
-  ): Promise<{ message: string; todo: Todo }> {
+  ): Promise<{ message: string; data: Todo }> {
     const userId = req.user.id;
     const todo = await this.todoService.updateTodo(id, updateTodoDto, userId);
     if (!todo) {

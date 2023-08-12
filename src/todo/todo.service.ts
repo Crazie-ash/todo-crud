@@ -5,6 +5,8 @@ import { Todo } from '../entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { TodoRepository } from './todo.repository';
 import { UpdateTodoDto } from 'src/todo/dto/update-todo.dto';
+import { CreateTodoResponse, DeleteTodoResponse, GetAllTodosResponse, GetTodoByIdResponse, UpdateTodoResponse } from './todo.response';
+import * as todoMessages from 'src/constants/todo.constants';
 
 @Injectable()
 export class TodoService {
@@ -20,7 +22,7 @@ export class TodoService {
         sortOrder: 'ASC' | 'DESC' = 'DESC',
         search: string = '',
         userId?: number,
-    ): Promise<any> {
+    ): Promise<GetAllTodosResponse> {
         const options: FindManyOptions<Todo> = {
             take: limit,
             skip: (page - 1) * limit,
@@ -36,45 +38,45 @@ export class TodoService {
             },
         };
         const todos = await this.todoRepository.find(options);
-        return { message: 'Successfully retrieved todos', data: todos };
+        return { message: todoMessages.TODOS_RETRIEVED_SUCCESSFULLY, data: todos };
     }
 
-    async getTodoById(id: number): Promise<any> {
+    async getTodoById(id: number): Promise<GetTodoByIdResponse> {
         const options: FindOneOptions<Todo> = {
             where: { id },
         };
         try {
             const todo = await this.todoRepository.findOne(options);
             if (!todo) {
-                throw new NotFoundException(`Todo with id ${id} not found`);
+                throw new NotFoundException(todoMessages.TODO_NOT_FOUND(id));
             }
-            return { message: 'Successfully retrieved a todo', data: todo };
+            return { message: todoMessages.TODO_RETRIEVED_SUCCESSFULLY, data: todo };
         } catch (error) {
             if (error instanceof HttpException) {
                 throw error;
             }
-            throw new InternalServerErrorException('Something went wrong!');
+            throw new InternalServerErrorException(todoMessages.SOMETHING_WENT_WRONG);
         }
     }
 
-    async createTodo(createTodoDto: CreateTodoDto, userId?: number): Promise<any> {
+    async createTodo(createTodoDto: CreateTodoDto, userId?: number): Promise<CreateTodoResponse> {
         try {
             const { title } = createTodoDto;
             const existingTodo = await this.todoRepository.findOne({ where: { title, userId } });
             if (existingTodo) {
-                throw new ConflictException('A Todo with the same title already exists.');
+                throw new ConflictException(todoMessages.TODO_ALREADY_EXISTS);
             }
 
             createTodoDto.userId = userId;
 
             const todo = this.todoRepository.create(createTodoDto);
             const createdTodo = await this.todoRepository.save(todo);
-            return { message: 'Todo created successfully', data: createdTodo };
+            return { message: todoMessages.TODO_CREATED_SUCCESSFULLY, data: createdTodo };
         } catch (error) {
             if (error instanceof ConflictException) {
                 throw new ConflictException(error.message);
             } else {
-                throw new InternalServerErrorException('Something went wrong!');
+                throw new InternalServerErrorException(todoMessages.SOMETHING_WENT_WRONG);
             }
         }
     }
@@ -83,46 +85,45 @@ export class TodoService {
         id: number,
         updateTodoDto: UpdateTodoDto,
         userId?: number,
-    ): Promise<any> {
+    ): Promise<UpdateTodoResponse> {
+        const todo = await this.getTodoById(id);
+        
+        if (!todo) {
+            throw new NotFoundException(todoMessages.TODO_NOT_FOUND(id));
+        }
+
+        if (userId && todo.data.userId !== userId) {
+            throw new ForbiddenException(todoMessages.PERMISSION_DENIED_UPDATE);
+        }
+
         try {
-            const todo = await this.getTodoById(id);
-            if (!todo) {
-                throw new NotFoundException(`Todo with id ${id} not found`);
-            }
-
-            if (userId && todo.data.userId !== userId) {
-                throw new ForbiddenException('You do not have permission to update this todo.');
-            }
-
             await this.todoRepository.update(id, updateTodoDto);
+            const updatedTodo = { ...todo.data, ...updateTodoDto };
 
-            return { message: 'Todo updated successfully', data: todo.data };
+            return { message: todoMessages.TODO_UPDATED_SUCCESSFULLY, data: updatedTodo };
         } catch (error) {
-            if (error instanceof HttpException) {
-                throw error;
-            }
-            throw new InternalServerErrorException('Something went wrong!');
+            throw new InternalServerErrorException(todoMessages.SOMETHING_WENT_WRONG);
         }
     }
 
-    async deleteTodo(id: number, userId?: number): Promise<any> {
+    async deleteTodo(id: number, userId?: number): Promise<DeleteTodoResponse> {
         try {
             const todo = await this.getTodoById(id);
             if (!todo) {
-                throw new NotFoundException(`Todo with id ${id} not found`);
+                throw new NotFoundException(todoMessages.TODO_NOT_FOUND(id));
             }
 
             if (userId && todo.data.userId !== userId) {
-                throw new ForbiddenException('You do not have permission to delete this todo.');
+                throw new ForbiddenException(todoMessages.PERMISSION_DENIED_DELETE);
             }
 
             const result = await this.todoRepository.delete(id);
             if (result.affected === 0) {
-                throw new NotFoundException(`Todo with id ${id} not found`);
+                throw new NotFoundException(todoMessages.TODO_NOT_FOUND(id));
             }
-            return { message: 'Todo deleted successfully' };
+            return { message: todoMessages.TODO_DELETED_SUCCESSFULLY };
         } catch (error) {
-            throw new InternalServerErrorException('Something went wrong!');
+            throw new InternalServerErrorException(todoMessages.SOMETHING_WENT_WRONG);
         }
     }
 }
