@@ -1,11 +1,11 @@
-export const DATABASE_HOST = 'DATABASE_HOST';
-export const DATABASE_PORT = 'DATABASE_PORT';
+export const POSTGRES_HOST = 'POSTGRES_HOST';
+export const POSTGRES_PORT = 'POSTGRES_PORT';
 export const DATABASE_USERNAME = 'DATABASE_USERNAME';
 export const DATABASE_PASSWORD = 'DATABASE_PASSWORD';
 export const DATABASE_NAME = 'DATABASE_NAME';
 export const DEFAULT_DATABASE_TYPE = 'postgres';
-export const DEFAULT_DATABASE_HOST = 'localhost';
-export const DEFAULT_DATABASE_PORT = 5432;
+export const DEFAULT_POSTGRES_HOST = 'localhost';
+export const DEFAULT_POSTGRES_PORT = 5432;
 export const DEFAULT_DATABASE_USERNAME = 'postgres';
 export const DEFAULT_DATABASE_PASSWORD = 'postgres';
 export const DEFAULT_DATABASE_NAME = 'todo_db';
